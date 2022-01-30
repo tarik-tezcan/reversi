@@ -40,6 +40,7 @@ export default {
 .square {
   border: 1px solid black;
   /* background-color: #bbbbbb; */
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;

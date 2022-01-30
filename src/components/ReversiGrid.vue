@@ -1,6 +1,10 @@
 <template>
   <div id="grid">
-    <InfoBar :lightPieces="lightPieces" :darkPieces="darkPieces" :turn="turn" />
+    <InfoBar
+      :light-pieces="lightPieces"
+      :dark-pieces="darkPieces"
+      :turn="turn"
+    />
     <div class="grid-row" v-for="row in gridSize" :key="row.id">
       <Square
         v-for="col in gridSize"
@@ -8,9 +12,9 @@
         v-bind:key="col.id"
         :row="row"
         :col="col"
-        :gridSize="gridSize"
-        :cellWidth="cellWidth"
-        :cellOwner="grid[row - 1][col - 1]"
+        :grid-size="gridSize"
+        :cell-width="cellWidth"
+        :cell-owner="grid[row - 1][col - 1]"
       />
     </div>
   </div>
@@ -29,13 +33,15 @@ export default {
   data() {
     return {
       gridSize: 8,
-      cellWidth: 64,
+      cellWidth: 72,
       grid: [],
       turn: 'dark',
       lightPieces: 2,
       darkPieces: 2,
+      winner: 'none',
     };
   },
+  emits: ['gameEnd'],
   methods: {
     // For the grid
     // 0 designates an empty cell
@@ -52,14 +58,21 @@ export default {
         }
         this.updateScores();
         if (this.checkAllPossibleMoves().length === 0) {
-          alert('Turn Passed');
           if (this.turn === 'light') {
             this.turn = 'dark';
           } else {
             this.turn = 'light';
           }
           if (this.checkAllPossibleMoves().length === 0) {
-            alert('Game Ended!');
+            if (this.darkPieces > this.lightPieces) {
+              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'DARK');
+            } else if (this.darkPieces < this.lightPieces) {
+              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'LIGHT');
+            } else {
+              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'none');
+            }
+          } else {
+            alert('Turn Passed');
           }
         }
       }
