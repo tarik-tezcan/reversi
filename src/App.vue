@@ -1,14 +1,15 @@
 <template>
-  <Reversi />
+  <h1>Reversi</h1>
+  <ReversiGrid />
 </template>
 
 <script>
-import Reversi from './components/Reversi.vue';
+import ReversiGrid from './components/ReversiGrid.vue';
 
 export default {
   name: 'App',
   components: {
-    Reversi,
+    ReversiGrid,
   },
 };
 </script>
@@ -22,6 +23,7 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
