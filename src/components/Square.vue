@@ -25,7 +25,7 @@ export default {
   computed: {
     cellColor() {
       if (this.cellOwner === 0) {
-        return 'lightgray';
+        return '#2eae52';
       }
       if (this.cellOwner === 1) {
         return 'black';
@@ -38,7 +38,7 @@ export default {
 
 <style lang="scss">
 .square {
-  border: 2px solid black;
+  border: 1px solid black;
   /* background-color: #bbbbbb; */
   display: flex;
   align-items: center;

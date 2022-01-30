@@ -51,19 +51,28 @@ export default {
           this.turn = 'light';
         }
         this.updateScores();
+        if (this.checkAllPossibleMoves().length === 0) {
+          alert('Turn Passed');
+          if (this.turn === 'light') {
+            this.turn = 'dark';
+          } else {
+            this.turn = 'light';
+          }
+          if (this.checkAllPossibleMoves().length === 0) {
+            alert('Game Ended!');
+          }
+        }
       }
     },
     darkMove(id) {
       const posRow = id[0] - 1;
       const posCol = id[2] - 1;
-      this.grid[posRow][posCol] = 1;
       const allChangingMoves = this.checkPossibleMoves(posRow, posCol);
       allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 1));
     },
     lightMove(id) {
       const posRow = id[0] - 1;
       const posCol = id[2] - 1;
-      this.grid[posRow][posCol] = 2;
       const allChangingMoves = this.checkPossibleMoves(posRow, posCol);
       allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 2));
     },
@@ -118,44 +127,55 @@ export default {
       }
       return false;
     },
+    checkAllPossibleMoves() {
+      const posMoves = [];
+      for (let i = 0; i < this.gridSize; i += 1) {
+        for (let j = 0; j < this.gridSize; j += 1) {
+          posMoves.push(this.checkPossibleMoves(i, j));
+        }
+      }
+      return posMoves.filter((x) => x.length > 0);
+    },
     checkPossibleMoves(cellRow, cellCol) {
       let count;
       let currentRow = cellRow;
       let currentCol = cellCol;
       const moves = [];
       // Check all directions;
-      for (let rowDirection = -1; rowDirection < 2; rowDirection += 1) {
-        for (let colDirection = -1; colDirection < 2; colDirection += 1) {
-          count = 0;
-          currentRow = cellRow;
-          currentCol = cellCol;
-          if (rowDirection !== 0 || colDirection !== 0) {
-            currentRow += rowDirection;
-            currentCol += colDirection;
-            while (
-              currentRow > -1
-              && currentRow < this.gridSize
-              && currentCol > -1
-              && currentCol < this.gridSize
-            ) {
-              if (this.grid[currentRow][currentCol] === 0) {
-                break;
-              } else if (
-                this.grid[currentRow][currentCol] === this.currentColorCode
-              ) {
-                if (count > 0) {
-                  moves.push([
-                    [cellRow, cellCol],
-                    [currentRow, currentCol],
-                    count,
-                  ]);
-                }
-                break;
-              } else {
-                count += 1;
-              }
+      if (this.grid[cellRow][cellCol] === 0) {
+        for (let rowDirection = -1; rowDirection < 2; rowDirection += 1) {
+          for (let colDirection = -1; colDirection < 2; colDirection += 1) {
+            count = 0;
+            currentRow = cellRow;
+            currentCol = cellCol;
+            if (rowDirection !== 0 || colDirection !== 0) {
               currentRow += rowDirection;
               currentCol += colDirection;
+              while (
+                currentRow > -1
+                && currentRow < this.gridSize
+                && currentCol > -1
+                && currentCol < this.gridSize
+              ) {
+                if (this.grid[currentRow][currentCol] === 0) {
+                  break;
+                } else if (
+                  this.grid[currentRow][currentCol] === this.currentColorCode
+                ) {
+                  if (count > 0) {
+                    moves.push([
+                      [cellRow, cellCol],
+                      [currentRow, currentCol],
+                      count,
+                    ]);
+                  }
+                  break;
+                } else {
+                  count += 1;
+                }
+                currentRow += rowDirection;
+                currentCol += colDirection;
+              }
             }
           }
         }
