@@ -1,5 +1,5 @@
 <template>
-  <h1>Reversi</h1>
+  <Header />
   <div id="game-wrapper">
     <EndScreen
       @resetGame="setVisible"
@@ -15,12 +15,14 @@
 <script>
 import ReversiGrid from './components/ReversiGrid.vue';
 import EndScreen from './components/EndScreen.vue';
+import Header from './components/Header.vue';
 
 export default {
   name: 'App',
   components: {
     ReversiGrid,
     EndScreen,
+    Header,
   },
   data() {
     return {
@@ -50,13 +52,17 @@ export default {
 </script>
 
 <style lang="scss">
+body {
+  margin: 0;
+  background-color: $nord6;
+}
+
 #app {
   font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: black;
-  margin-top: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -72,7 +78,7 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: calc(8px * 72);
+  width: clamp(calc(4px * 72), calc(8px * 72), calc(8px * 72));
   height: calc(8px * 72 + 72px);
 }
 </style>

@@ -28,9 +28,9 @@ export default {
         return '#2eae52';
       }
       if (this.cellOwner === 1) {
-        return 'black';
+        return '#2e3440';
       }
-      return 'white';
+      return '#eceff4';
     },
   },
 };

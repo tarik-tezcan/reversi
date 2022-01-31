@@ -23,6 +23,7 @@ export default {
   width: 100%;
   height: 72px;
   border: 2px solid black;
+  background-color: $nord6;
   /* background-color: gray; */
   color: black;
   display: flex;
