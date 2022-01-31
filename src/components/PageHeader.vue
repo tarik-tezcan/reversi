@@ -3,8 +3,16 @@
     <section id="top-bar">
       <h1>Reversi</h1>
       <div id="nav-bar">
-        <p>Play</p>
-        <p>Rules</p>
+        <p>
+          <router-link to="/">
+            Play
+          </router-link>
+        </p>
+        <p>
+          <router-link to="/rules">
+            Rules
+          </router-link>
+        </p>
       </div>
     </section>
   </header>
@@ -47,6 +55,10 @@ export default {
         margin-bottom: 8px;
       }
     }
+  }
+
+  a {
+    color: $nord4;
   }
 
   h1 {
