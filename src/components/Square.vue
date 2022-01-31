@@ -25,7 +25,7 @@ export default {
   computed: {
     cellColor() {
       if (this.cellOwner === 0) {
-        return '#2eae52';
+        return '#87ad66';
       }
       if (this.cellOwner === 1) {
         return '#2e3440';

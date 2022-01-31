@@ -1,28 +1,32 @@
 <template>
-  <Header />
+  <PageHeader />
   <div id="game-wrapper">
     <EndScreen
-      @resetGame="setVisible"
       v-show="showEndScreen"
       :light-score="lightScore"
       :dark-score="darkScore"
       :winner="winner"
+      @resetGame="setVisible"
     />
-    <ReversiGrid @gameEnd="setHidden" v-show="showGrid" :key="playCount" />
+    <ReversiGrid
+      v-show="showGrid"
+      :key="playCount"
+      @gameEnd="setHidden"
+    />
   </div>
 </template>
 
 <script>
 import ReversiGrid from './components/ReversiGrid.vue';
 import EndScreen from './components/EndScreen.vue';
-import Header from './components/Header.vue';
+import PageHeader from './components/PageHeader.vue';
 
 export default {
   name: 'App',
   components: {
     ReversiGrid,
     EndScreen,
-    Header,
+    PageHeader,
   },
   data() {
     return {
@@ -62,7 +66,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: black;
+  /* color: black; */
   display: flex;
   flex-direction: column;
   justify-content: center;

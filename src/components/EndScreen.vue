@@ -1,9 +1,18 @@
 <template>
   <div id="end-screen">
-    <p v-if="winner === 'none'">IT'S A TIE</p>
-    <p v-else>THE WINNER IS {{ winner }}</p>
+    <p v-if="winner === 'none'">
+      IT'S A TIE
+    </p>
+    <p v-else>
+      THE WINNER IS {{ winner }}
+    </p>
     <p>LIGHT: {{ lightScore }} vs DARK: {{ darkScore }}</p>
-    <button id="play-again" v-on:click="$emit('resetGame')">PLAY AGAIN</button>
+    <button
+      id="play-again"
+      @click="$emit('resetGame')"
+    >
+      PLAY AGAIN
+    </button>
   </div>
 </template>
 

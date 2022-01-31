@@ -5,16 +5,20 @@
       :dark-pieces="darkPieces"
       :turn="turn"
     />
-    <div class="grid-row" v-for="row in gridSize" :key="row.id">
+    <div
+      v-for="row in gridSize"
+      :key="row.id"
+      class="grid-row"
+    >
       <Square
         v-for="col in gridSize"
-        @click="handleMove($event)"
-        v-bind:key="col.id"
+        :key="col.id"
         :row="row"
         :col="col"
         :grid-size="gridSize"
         :cell-width="cellWidth"
         :cell-owner="grid[row - 1][col - 1]"
+        @click="handleMove($event)"
       />
     </div>
   </div>
@@ -30,6 +34,7 @@ export default {
     Square,
     InfoBar,
   },
+  emits: ['gameEnd'],
   data() {
     return {
       gridSize: 8,
@@ -41,7 +46,23 @@ export default {
       winner: 'none',
     };
   },
-  emits: ['gameEnd'],
+  computed: {
+    currentColorCode() {
+      if (this.turn === 'dark') {
+        return 1;
+      }
+      return 2;
+    },
+  },
+  beforeMount() {
+    this.grid = Array(this.gridSize)
+      .fill(0)
+      .map(() => Array(this.gridSize).fill(0));
+    this.grid[3][3] = 2;
+    this.grid[4][4] = 2;
+    this.grid[3][4] = 1;
+    this.grid[4][3] = 1;
+  },
   methods: {
     // For the grid
     // 0 designates an empty cell
@@ -194,23 +215,6 @@ export default {
         }
       }
       return moves;
-    },
-  },
-  beforeMount() {
-    this.grid = Array(this.gridSize)
-      .fill(0)
-      .map(() => Array(this.gridSize).fill(0));
-    this.grid[3][3] = 2;
-    this.grid[4][4] = 2;
-    this.grid[3][4] = 1;
-    this.grid[4][3] = 1;
-  },
-  computed: {
-    currentColorCode() {
-      if (this.turn === 'dark') {
-        return 1;
-      }
-      return 2;
     },
   },
 };

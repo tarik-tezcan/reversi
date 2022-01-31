@@ -1,9 +1,13 @@
 <template>
   <div id="info-bar">
-    <p v-if="turn === 'light'">Light's turn</p>
-    <p v-else>Dark's turn</p>
-    <p>Light: {{ lightPieces }}</p>
     <p>Dark: {{ darkPieces }}</p>
+    <p v-if="turn === 'light'">
+      Light's turn
+    </p>
+    <p v-else>
+      Dark's turn
+    </p>
+    <p>Light: {{ lightPieces }}</p>
   </div>
 </template>
 
@@ -18,7 +22,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #info-bar {
   width: 100%;
   height: 72px;
@@ -29,5 +33,9 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+
+p {
+  font-size: 22px;
 }
 </style>
