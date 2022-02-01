@@ -11,6 +11,12 @@
       objective of the game is to have the majority of disks turned to display
       one's color when the last playable empty square is filled.
     </p>
+    <p>
+      <a
+        href="https://www.wikiwand.com/en/Reversi"
+        target="_blank"
+      >For more information</a>
+    </p>
   </div>
 </template>
 

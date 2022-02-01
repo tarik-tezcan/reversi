@@ -1,13 +1,24 @@
 <template>
   <div id="info-bar">
-    <p>Dark: {{ darkPieces }}</p>
-    <p v-if="turn === 'light'">
-      Light's turn
-    </p>
-    <p v-else>
-      Dark's turn
-    </p>
-    <p>Light: {{ lightPieces }}</p>
+    <div id="info">
+      <p>Dark: {{ darkPieces }}</p>
+      <p v-if="turn === 'light'">
+        Light's turn
+      </p>
+      <p v-else>
+        Dark's turn
+      </p>
+      <p>Light: {{ lightPieces }}</p>
+    </div>
+    <button
+      id="pass-button"
+      :disabled="isDisabled"
+      hidden
+      @passTurn="enableButton"
+      @click="disableButton"
+    >
+      Pass Turn
+    </button>
   </div>
 </template>
 
@@ -15,9 +26,22 @@
 export default {
   name: 'InfoBar',
   props: {
-    turn: String,
-    lightPieces: Number,
-    darkPieces: Number,
+    turn: { type: String, default: 'dark' },
+    lightPieces: { type: Number, default: 2 },
+    darkPieces: { type: Number, default: 2 },
+  },
+  data() {
+    return {
+      isDisabled: true,
+    };
+  },
+  methods: {
+    enableButton() {
+      this.isDisabled = false;
+    },
+    disableButton() {
+      this.isDisabled = true;
+    },
   },
 };
 </script>
@@ -31,6 +55,15 @@ export default {
   /* background-color: gray; */
   color: black;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#info {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
   justify-content: space-around;
   align-items: center;
 }

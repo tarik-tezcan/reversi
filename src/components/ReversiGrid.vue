@@ -34,7 +34,7 @@ export default {
     Square,
     InfoBar,
   },
-  emits: ['gameEnd'],
+  emits: ['gameEnd', 'passTurn'],
   data() {
     return {
       gridSize: 8,
@@ -93,6 +93,7 @@ export default {
               this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'none');
             }
           } else {
+            this.$emit('passTurn');
             alert('Turn Passed');
           }
         }

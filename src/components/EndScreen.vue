@@ -20,9 +20,9 @@
 export default {
   name: 'EndScreen',
   props: {
-    lightScore: Number,
-    darkScore: Number,
-    winner: String,
+    lightScore: { type: Number, default: 32 },
+    darkScore: { type: Number, default: 32 },
+    winner: { type: String, default: 'none' },
   },
   emits: ['resetGame'],
 };
