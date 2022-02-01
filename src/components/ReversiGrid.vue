@@ -18,7 +18,7 @@
         :grid-size="gridSize"
         :cell-width="cellWidth"
         :cell-owner="grid[row - 1][col - 1]"
-        @click="handleMove($event)"
+        @click="handleMove($event.target.id)"
       />
     </div>
   </div>
@@ -44,6 +44,7 @@ export default {
       lightPieces: 2,
       darkPieces: 2,
       winner: 'none',
+      isComputerTurn: false,
     };
   },
   computed: {
@@ -64,25 +65,27 @@ export default {
     this.grid[4][3] = 1;
   },
   methods: {
-    // For the grid
     // 0 designates an empty cell
     // 1 designates a dark cell
     // 2 designates a light cell
-    handleMove(event) {
-      if (this.isValid(event.target.id)) {
+    handleMove(moveLoc) {
+      if (this.isValid(moveLoc)) {
         if (this.turn === 'light') {
-          this.lightMove(event.target.id);
+          this.lightMove(moveLoc);
           this.turn = 'dark';
         } else {
-          this.darkMove(event.target.id);
+          this.darkMove(moveLoc);
           this.turn = 'light';
+          this.isComputerTurn = true;
         }
         this.updateScores();
         if (this.checkAllPossibleMoves().length === 0) {
           if (this.turn === 'light') {
             this.turn = 'dark';
+            this.isComputerTurn = false;
           } else {
             this.turn = 'light';
+            this.isComputerTurn = true;
           }
           if (this.checkAllPossibleMoves().length === 0) {
             if (this.darkPieces > this.lightPieces) {
@@ -94,8 +97,12 @@ export default {
             }
           } else {
             this.$emit('passTurn');
-            alert('Turn Passed');
+            alert(`${this.turn}Turn Passed`);
           }
+        }
+        if (this.isComputerTurn === true && this.checkAllPossibleMoves().length !== 0) {
+          this.isComputerTurn = false;
+          this.computerMove();
         }
       }
     },
@@ -110,6 +117,24 @@ export default {
       const posCol = id[2] - 1;
       const allChangingMoves = this.checkPossibleMoves(posRow, posCol);
       allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 2));
+    },
+    computerMove() {
+      let moves = this.checkAllPossibleMoves();
+      console.log('-------------');
+      console.log(moves);
+      moves = moves.map((el) => {
+        const finalElement = [el[0][0], el[0][1], 0];
+        finalElement[2] = 0;
+        el.forEach((subElement) => {
+          finalElement[2] += subElement[2];
+        });
+        console.log(finalElement);
+        return finalElement;
+      });
+      moves = moves.sort((el1, el2) => (el2[2] - el1[2]));
+      console.log(moves);
+      /* console.log(`${moves[0][0][0][0]}-${moves[0][0][0][1]}`); */
+      setTimeout(() => (this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`)), 1000);
     },
     changeColorTo(startLocation, endLocation, targetColorCode) {
       let curRow = startLocation[0];
