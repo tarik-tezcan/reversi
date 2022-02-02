@@ -19,6 +19,16 @@
     >
       Pass Turn
     </button>
+    <div id="ai-checkbox">
+      <label for="vs-ai"> Against Computer</label>
+      <input
+        id="vs-ai"
+        v-model="checked"
+        type="checkbox"
+        name="vs-ai"
+        @change="emitCheckboxState($event)"
+      >
+    </div>
   </div>
 </template>
 
@@ -30,9 +40,12 @@ export default {
     lightPieces: { type: Number, default: 2 },
     darkPieces: { type: Number, default: 2 },
   },
+  emits: ['opponentChange'],
   data() {
     return {
+      checked: true,
       isDisabled: true,
+      isChecked: false,
     };
   },
   methods: {
@@ -41,6 +54,11 @@ export default {
     },
     disableButton() {
       this.isDisabled = true;
+    },
+    emitCheckboxState(event) {
+      this.isChecked = event.target.checked;
+      this.$emit('opponentChange', this.isChecked);
+      console.log(this.isChecked);
     },
   },
 };
@@ -68,7 +86,17 @@ export default {
   align-items: center;
 }
 
+#ai-checkbox {
+  font-size: 11px;
+
+  input {
+    width: 12px;
+    height: 12px;
+  }
+}
+
 p {
   font-size: 22px;
+  margin-bottom: 4px;
 }
 </style>

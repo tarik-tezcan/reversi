@@ -1,9 +1,12 @@
 <template>
-  <div id="grid">
+  <div
+    id="grid"
+  >
     <InfoBar
       :light-pieces="lightPieces"
       :dark-pieces="darkPieces"
       :turn="turn"
+      @opponentChange="changeOpponent($event)"
     />
     <div
       v-for="row in gridSize"
@@ -45,6 +48,7 @@ export default {
       darkPieces: 2,
       winner: 'none',
       isComputerTurn: false,
+      isAgainstComputer: true,
     };
   },
   computed: {
@@ -65,6 +69,13 @@ export default {
     this.grid[4][3] = 1;
   },
   methods: {
+    changeOpponent(event) {
+      this.isAgainstComputer = event;
+      if (this.isAgainstComputer && this.isComputerTurn) {
+        this.isComputerTurn = false;
+        this.computerMove();
+      }
+    },
     // 0 designates an empty cell
     // 1 designates a dark cell
     // 2 designates a light cell
@@ -100,7 +111,8 @@ export default {
             alert(`${this.turn}Turn Passed`);
           }
         }
-        if (this.isComputerTurn === true && this.checkAllPossibleMoves().length !== 0) {
+        if (this.turn === 'light' && this.isAgainstComputer && this.isComputerTurn
+        && this.checkAllPossibleMoves().length !== 0) {
           this.isComputerTurn = false;
           this.computerMove();
         }
@@ -134,7 +146,7 @@ export default {
       moves = moves.sort((el1, el2) => (el2[2] - el1[2]));
       console.log(moves);
       /* console.log(`${moves[0][0][0][0]}-${moves[0][0][0][1]}`); */
-      setTimeout(() => (this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`)), 1000);
+      setTimeout(() => (this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`)), 500);
     },
     changeColorTo(startLocation, endLocation, targetColorCode) {
       let curRow = startLocation[0];
