@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: 'Square',
+  name: 'GridSquare',
   props: {
     row: { type: Number, default: 0 },
     col: { type: Number, default: 0 },

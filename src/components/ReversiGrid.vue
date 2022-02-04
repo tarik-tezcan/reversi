@@ -1,8 +1,8 @@
 <template>
-  <div
-    id="grid"
-  >
+  <div id="grid">
     <InfoBar
+      :player-one-name="nameOfPlayerOne"
+      :player-two-name="nameOfPlayerTwo"
       :light-pieces="lightPieces"
       :dark-pieces="darkPieces"
       :turn="turn"
@@ -13,7 +13,7 @@
       :key="row.id"
       class="grid-row"
     >
-      <Square
+      <GridSquare
         v-for="col in gridSize"
         :key="col.id"
         :row="row"
@@ -28,13 +28,13 @@
 </template>
 
 <script>
-import Square from './Square.vue';
-import InfoBar from './InfoBar.vue';
+import InfoBar from '@/components/infobar/InfoBar.vue';
+import GridSquare from './GridSquare.vue';
 
 export default {
   name: 'ReversiGrid',
   components: {
-    Square,
+    GridSquare,
     InfoBar,
   },
   emits: ['gameEnd', 'passTurn'],
@@ -49,6 +49,8 @@ export default {
       winner: 'none',
       isComputerTurn: false,
       isAgainstComputer: true,
+      nameOfPlayerOne: 'Player One',
+      nameOfPlayerTwo: 'PC',
     };
   },
   computed: {
@@ -71,7 +73,13 @@ export default {
   methods: {
     changeOpponent(event) {
       this.isAgainstComputer = event;
-      if (this.isAgainstComputer && this.isComputerTurn) {
+      if (this.isAgainstComputer) {
+        this.nameOfPlayerTwo = 'PC';
+      } else {
+        this.nameOfPlayerTwo = 'Player Two';
+      }
+      console.log(`Against Computer:${this.isAgainstComputer}`);
+      if (this.turn === 'light' && this.isAgainstComputer && this.isComputerTurn) {
         this.isComputerTurn = false;
         this.computerMove();
       }
@@ -111,8 +119,12 @@ export default {
             alert(`${this.turn}Turn Passed`);
           }
         }
-        if (this.turn === 'light' && this.isAgainstComputer && this.isComputerTurn
-        && this.checkAllPossibleMoves().length !== 0) {
+        if (
+          this.turn === 'light'
+          && this.isAgainstComputer
+          && this.isComputerTurn
+          && this.checkAllPossibleMoves().length !== 0
+        ) {
           this.isComputerTurn = false;
           this.computerMove();
         }
@@ -132,21 +144,19 @@ export default {
     },
     computerMove() {
       let moves = this.checkAllPossibleMoves();
-      console.log('-------------');
-      console.log(moves);
       moves = moves.map((el) => {
         const finalElement = [el[0][0], el[0][1], 0];
         finalElement[2] = 0;
         el.forEach((subElement) => {
           finalElement[2] += subElement[2];
         });
-        console.log(finalElement);
         return finalElement;
       });
-      moves = moves.sort((el1, el2) => (el2[2] - el1[2]));
-      console.log(moves);
-      /* console.log(`${moves[0][0][0][0]}-${moves[0][0][0][1]}`); */
-      setTimeout(() => (this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`)), 500);
+      moves = moves.sort((el1, el2) => el2[2] - el1[2]);
+      setTimeout(
+        () => this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`),
+        500,
+      );
     },
     changeColorTo(startLocation, endLocation, targetColorCode) {
       let curRow = startLocation[0];
