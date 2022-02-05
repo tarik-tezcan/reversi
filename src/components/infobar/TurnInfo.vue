@@ -52,22 +52,28 @@ export default {
 .turn-info {
   height: 100%;
   display: grid;
-  grid-template-rows: 1fr 3.5fr;
+  grid-template-rows: 33% 33% 33%;
 }
 
 #ai-checkbox {
   font-size: 12px;
   margin: 0px;
+  margin-top: 4px;
 
   #vs-ai {
     width: 12px;
     height: 12px;
+    margin: 0px;
+    margin-left: 8px;
+    /* margin-top: 0px; */
+    /* margin-bottom: 0px; */
   }
 }
 
 .turn-info-text {
   font-size: 22px;
+  text-align: center;
   margin-top: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 </style>

@@ -33,19 +33,29 @@ export default {
 
 <style lang="scss" scoped>
 .player-info {
-  height: 100%;
+  height: 72px;
   display: grid;
-  grid-template-rows: 1fr 3.5fr;
+  grid-template-rows: 33% 33% 33%;
+  grid-template-areas:
+  "pn"
+  "ps"
+  ".";
 }
 
 .player-name {
   font-size: 12px;
-  margin: 0px;
+  grid-area: pn;
+  margin-top: 4px;
+  margin-bottom: 0px;
+  /* display: flex; */
+  /* justify-content: center; */
+  /* align-items: center; */
 }
 
 .player-score {
   font-size: 22px;
-  margin-top: 0px;
-  margin-bottom: 10px;
+  margin: 0px;
+  grid-area: ps;
 }
+
 </style>

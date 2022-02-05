@@ -2,10 +2,6 @@
   <button
     class="square"
     v-bind="{ id: row + '-' + col }"
-    :style="{
-      width: cellWidth + 'px',
-      height: cellWidth + 'px',
-    }"
   >
     <div
       v-if="cellOwner != '0'"
@@ -25,7 +21,6 @@ export default {
     row: { type: Number, default: 0 },
     col: { type: Number, default: 0 },
     gridSize: { type: Number, default: 72 },
-    cellWidth: { type: Number, default: 72 },
     cellOwner: { type: Number, default: 0 },
   },
   computed: {
@@ -53,6 +48,8 @@ export default {
   padding: 0px;
   background-color: #87ad66;
   position: relative;
+  width: $square-size;
+  height: $square-size;
   .disk {
     width: calc(100% - 4px);
     height: calc(100% - 4px);

@@ -19,7 +19,6 @@
         :row="row"
         :col="col"
         :grid-size="gridSize"
-        :cell-width="cellWidth"
         :cell-owner="grid[row - 1][col - 1]"
         @click="handleMove($event.target.id)"
       />
@@ -41,7 +40,6 @@ export default {
   data() {
     return {
       gridSize: 8,
-      cellWidth: 72,
       grid: [],
       turn: 'dark',
       lightPieces: 2,
@@ -143,6 +141,13 @@ export default {
       allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 2));
     },
     computerMove() {
+      const pickedMove = this.pickBestMove();
+      setTimeout(
+        () => this.handleMove(`${pickedMove[0][0] + 1}-${pickedMove[0][1] + 1}`),
+        500,
+      );
+    },
+    oldComputerMove() {
       let moves = this.checkAllPossibleMoves();
       moves = moves.map((el) => {
         const finalElement = [el[0][0], el[0][1], 0];
@@ -157,6 +162,22 @@ export default {
         () => this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`),
         500,
       );
+    },
+    pickBestMove() {
+      const possibleMoves = this.checkAllPossibleMoves().map((el) => el[0]);
+      let biggestMoveScore = 0;
+      let bestMove;
+      possibleMoves.forEach((move) => {
+        const curGrid = JSON.parse(JSON.stringify(this.grid));
+        this.changeColorTo(move[0], move[1], 2);
+        const moveScore = this.calculateScores()[0];
+        if (moveScore > biggestMoveScore) {
+          biggestMoveScore = moveScore;
+          bestMove = move;
+        }
+        this.grid = curGrid;
+      });
+      return bestMove;
     },
     changeColorTo(startLocation, endLocation, targetColorCode) {
       let curRow = startLocation[0];
@@ -177,6 +198,11 @@ export default {
       const gridString = JSON.stringify(this.grid);
       this.lightPieces = (gridString.match(/2/g) || []).length;
       this.darkPieces = (gridString.match(/1/g) || []).length;
+    },
+    calculateScores() {
+      const gridString = JSON.stringify(this.grid);
+      return [(gridString.match(/2/g) || []).length,
+        (gridString.match(/1/g) || []).length];
     },
     doesContain(arrOne, arrTwo) {
       const arrOneString = JSON.stringify(arrOne);

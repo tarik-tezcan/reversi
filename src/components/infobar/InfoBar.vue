@@ -46,14 +46,14 @@ export default {
 <style lang="scss">
 #info-bar {
   width: 100%;
-  height: 72px;
+  height: $square-size;
   border: 2px solid black;
   background-color: $nord6;
   /* background-color: gray; */
   color: black;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-auto-rows: minmax(100px, auto);
+  grid-auto-rows: minmax($square-size, auto);
   justify-items: center;
 }
 
