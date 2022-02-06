@@ -1,8 +1,8 @@
 <template>
   <div id="grid">
     <InfoBar
-      :player-one-name="nameOfPlayerOne"
-      :player-two-name="nameOfPlayerTwo"
+      :player-one-name="playerOne.name"
+      :player-two-name="playerTwo.name"
       :light-pieces="lightPieces"
       :dark-pieces="darkPieces"
       :turn="turn"
@@ -28,7 +28,7 @@
 
 <script>
 import InfoBar from '@/components/infobar/InfoBar.vue';
-import GridSquare from './GridSquare.vue';
+import GridSquare from '@/components/GridSquare.vue';
 
 export default {
   name: 'ReversiGrid',
@@ -37,36 +37,54 @@ export default {
     InfoBar,
   },
   emits: ['gameEnd', 'passTurn'],
+  // Player One is dark
+  // Player Two is light
   data() {
     return {
       gridSize: 8,
       grid: [],
+      emptyColorCode: 0,
+      darkColorCode: 1,
+      lightColorCode: 2,
       turn: 'dark',
       lightPieces: 2,
       darkPieces: 2,
       winner: 'none',
       isComputerTurn: false,
       isAgainstComputer: true,
-      nameOfPlayerOne: 'Player One',
-      nameOfPlayerTwo: 'PC',
+      playerOne: {
+        name: 'Player One',
+        color: 'dark',
+        colorCode: 1,
+        isHuman: true,
+      },
+      playerTwo: {
+        name: 'PC',
+        color: 'light',
+        colorCode: 2,
+        isHuman: false,
+      },
+      currentPlayer: {},
+      moveDelay: 500,
     };
   },
   computed: {
     currentColorCode() {
       if (this.turn === 'dark') {
-        return 1;
+        return this.darkColorCode;
       }
-      return 2;
+      return this.lightColorCode;
     },
   },
   beforeMount() {
     this.grid = Array(this.gridSize)
-      .fill(0)
-      .map(() => Array(this.gridSize).fill(0));
-    this.grid[3][3] = 2;
-    this.grid[4][4] = 2;
-    this.grid[3][4] = 1;
-    this.grid[4][3] = 1;
+      .fill(this.emptyColorCode)
+      .map(() => Array(this.gridSize).fill(this.emptyColorCode));
+    this.grid[3][3] = this.lightColorCode;
+    this.grid[4][4] = this.lightColorCode;
+    this.grid[3][4] = this.darkColorCode;
+    this.grid[4][3] = this.darkColorCode;
+    this.currentPlayer = this.playerOne;
   },
   methods: {
     changeOpponent(event) {
@@ -86,104 +104,82 @@ export default {
     // 1 designates a dark cell
     // 2 designates a light cell
     handleMove(moveLoc) {
-      if (this.isValid(moveLoc)) {
-        if (this.turn === 'light') {
-          this.lightMove(moveLoc);
-          this.turn = 'dark';
-        } else {
-          this.darkMove(moveLoc);
-          this.turn = 'light';
-          this.isComputerTurn = true;
-        }
-        this.updateScores();
-        if (this.checkAllPossibleMoves().length === 0) {
-          if (this.turn === 'light') {
-            this.turn = 'dark';
-            this.isComputerTurn = false;
-          } else {
-            this.turn = 'light';
-            this.isComputerTurn = true;
-          }
-          if (this.checkAllPossibleMoves().length === 0) {
-            if (this.darkPieces > this.lightPieces) {
-              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'DARK');
-            } else if (this.darkPieces < this.lightPieces) {
-              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'LIGHT');
-            } else {
-              this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'none');
-            }
+      if (this.isValid(moveLoc, this.grid)) {
+        // Make the move
+        this.makeMove(moveLoc, this.currentPlayer, this.grid);
+        this.changeTurn();
+        this.updateScores(this.grid);
+        // If there won't be a possible move pass the turn
+        if (this.checkAllPossibleMoves(this.grid).length === 0) {
+          this.changeTurn();
+          // If there isn't a move when turn is passed, game is ended
+          if (this.checkAllPossibleMoves(this.grid).length === 0) {
+            this.endGame();
           } else {
             this.$emit('passTurn');
             alert(`${this.turn}Turn Passed`);
           }
         }
+        // Trigger the move for AI when turn is changed
         if (
           this.turn === 'light'
           && this.isAgainstComputer
           && this.isComputerTurn
-          && this.checkAllPossibleMoves().length !== 0
+          && this.checkAllPossibleMoves(this.grid).length !== 0
         ) {
-          this.isComputerTurn = false;
+          console.log(this.checkAllPossibleMoves(this.grid));
           this.computerMove();
         }
       }
     },
-    darkMove(id) {
-      const posRow = id[0] - 1;
-      const posCol = id[2] - 1;
-      const allChangingMoves = this.checkPossibleMoves(posRow, posCol);
-      allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 1));
-    },
-    lightMove(id) {
-      const posRow = id[0] - 1;
-      const posCol = id[2] - 1;
-      const allChangingMoves = this.checkPossibleMoves(posRow, posCol);
-      allChangingMoves.forEach((element) => this.changeColorTo(element[0], element[1], 2));
+    // Methods for making moves
+    makeMove(moveLocation, movePlayer, moveGrid) {
+      const posRow = moveLocation[0] - 1;
+      const posCol = moveLocation[2] - 1;
+      const allChangingMoves = this.checkPossibleMoves(posRow, posCol, moveGrid);
+      allChangingMoves.forEach((el) => {
+        this.grid = this.changeColorTo(el[0], el[1], movePlayer.colorCode, this.grid);
+      });
     },
     computerMove() {
       const pickedMove = this.pickBestMove();
       setTimeout(
         () => this.handleMove(`${pickedMove[0][0] + 1}-${pickedMove[0][1] + 1}`),
-        500,
-      );
-    },
-    oldComputerMove() {
-      let moves = this.checkAllPossibleMoves();
-      moves = moves.map((el) => {
-        const finalElement = [el[0][0], el[0][1], 0];
-        finalElement[2] = 0;
-        el.forEach((subElement) => {
-          finalElement[2] += subElement[2];
-        });
-        return finalElement;
-      });
-      moves = moves.sort((el1, el2) => el2[2] - el1[2]);
-      setTimeout(
-        () => this.handleMove(`${moves[0][0][0] + 1}-${moves[0][0][1] + 1}`),
-        500,
+        this.moveDelay,
       );
     },
     pickBestMove() {
-      const possibleMoves = this.checkAllPossibleMoves().map((el) => el[0]);
+      return this.maxMove();
+    },
+    maxMove() {
+      let possibleMoves = this.checkAllPossibleMoves(this.grid);
       let biggestMoveScore = 0;
-      let bestMove;
+      let maxMove;
+      // For each possible move
+      // make the move, and then calculate the score
+      possibleMoves = possibleMoves.map((el) => el[0]);
       possibleMoves.forEach((move) => {
-        const curGrid = JSON.parse(JSON.stringify(this.grid));
-        this.changeColorTo(move[0], move[1], 2);
-        const moveScore = this.calculateScores()[0];
+        // Deep copy of current grid
+        let curGrid = JSON.parse(JSON.stringify(this.grid));
+        const allMovesFrom = this.checkPossibleMoves(move[0][0], move[0][1], this.grid);
+        allMovesFrom.forEach((el) => {
+          curGrid = this.changeColorTo(el[0], el[1], this.lightColorCode, curGrid);
+        });
+        const moveScore = this.calculateScores(curGrid)[0];
         if (moveScore > biggestMoveScore) {
           biggestMoveScore = moveScore;
-          bestMove = move;
+          maxMove = move;
         }
-        this.grid = curGrid;
       });
-      return bestMove;
+      return maxMove;
     },
-    changeColorTo(startLocation, endLocation, targetColorCode) {
+    // Updating the game status
+    changeColorTo(startLocation, endLocation, targetColorCode, gridToChange) {
       let curRow = startLocation[0];
       let curCol = startLocation[1];
+      const changeableGrid = JSON.parse(JSON.stringify(gridToChange));
       while (curRow - endLocation[0] !== 0 || curCol - endLocation[1] !== 0) {
-        this.grid[curRow][curCol] = targetColorCode;
+        changeableGrid[curRow][curCol] = targetColorCode;
         if (curRow !== endLocation[0]) {
           curRow
             -= (curRow - endLocation[0]) / Math.abs(curRow - endLocation[0]);
@@ -193,17 +189,39 @@ export default {
             -= (curCol - endLocation[1]) / Math.abs(curCol - endLocation[1]);
         }
       }
+      return changeableGrid;
     },
-    updateScores() {
-      const gridString = JSON.stringify(this.grid);
+    updateScores(gridStatus) {
+      const gridString = JSON.stringify(gridStatus);
       this.lightPieces = (gridString.match(/2/g) || []).length;
       this.darkPieces = (gridString.match(/1/g) || []).length;
     },
-    calculateScores() {
-      const gridString = JSON.stringify(this.grid);
+    calculateScores(gridStatus) {
+      const gridString = JSON.stringify(gridStatus);
       return [(gridString.match(/2/g) || []).length,
         (gridString.match(/1/g) || []).length];
     },
+    endGame() {
+      if (this.darkPieces > this.lightPieces) {
+        this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'DARK');
+      } else if (this.darkPieces < this.lightPieces) {
+        this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'LIGHT');
+      } else {
+        this.$emit('gameEnd', this.lightPieces, this.darkPieces, 'none');
+      }
+    },
+    changeTurn() {
+      if (this.currentPlayer === this.playerOne) {
+        this.currentPlayer = this.playerTwo;
+        this.turn = this.playerTwo.color;
+        this.isComputerTurn = true;
+      } else {
+        this.currentPlayer = this.playerOne;
+        this.turn = this.playerOne.color;
+        this.isComputerTurn = false;
+      }
+    },
+    // Helper
     doesContain(arrOne, arrTwo) {
       const arrOneString = JSON.stringify(arrOne);
       const arrTwoString = JSON.stringify(arrTwo);
@@ -213,17 +231,18 @@ export default {
       }
       return false;
     },
-    isValid(moveLocation) {
+    // Calculating moves
+    isValid(moveLocation, gridStatus) {
       const moveRow = moveLocation[0] - 1;
       const moveCol = moveLocation[2] - 1;
       const allPossibleMoves = [];
       // Is square filled ?
-      if (this.grid[moveRow][moveCol] !== 0) {
+      if (gridStatus[moveRow][moveCol] !== 0) {
         return false;
       }
       for (let i = 0; i < this.gridSize; i += 1) {
         for (let j = 0; j < this.gridSize; j += 1) {
-          allPossibleMoves.push(this.checkPossibleMoves(i, j));
+          allPossibleMoves.push(this.checkPossibleMoves(i, j, gridStatus));
         }
       }
       const allPossibleMoveLocations = allPossibleMoves
@@ -235,22 +254,22 @@ export default {
       }
       return false;
     },
-    checkAllPossibleMoves() {
+    checkAllPossibleMoves(gridStatus) {
       const posMoves = [];
       for (let i = 0; i < this.gridSize; i += 1) {
         for (let j = 0; j < this.gridSize; j += 1) {
-          posMoves.push(this.checkPossibleMoves(i, j));
+          posMoves.push(this.checkPossibleMoves(i, j, gridStatus));
         }
       }
       return posMoves.filter((x) => x.length > 0);
     },
-    checkPossibleMoves(cellRow, cellCol) {
+    checkPossibleMoves(cellRow, cellCol, gridStatus) {
       let count;
       let currentRow = cellRow;
       let currentCol = cellCol;
       const moves = [];
-      // Check all directions;
-      if (this.grid[cellRow][cellCol] === 0) {
+      // Check all directions from reverse (-1) to straight (1)
+      if (gridStatus[cellRow][cellCol] === 0) {
         for (let rowDirection = -1; rowDirection < 2; rowDirection += 1) {
           for (let colDirection = -1; colDirection < 2; colDirection += 1) {
             count = 0;
@@ -265,10 +284,10 @@ export default {
                 && currentCol > -1
                 && currentCol < this.gridSize
               ) {
-                if (this.grid[currentRow][currentCol] === 0) {
+                if (gridStatus[currentRow][currentCol] === this.emptyColorCode) {
                   break;
                 } else if (
-                  this.grid[currentRow][currentCol] === this.currentColorCode
+                  gridStatus[currentRow][currentCol] === this.currentColorCode
                 ) {
                   if (count > 0) {
                     moves.push([
@@ -294,7 +313,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #grid {
   display: flex;
   flex-direction: column;

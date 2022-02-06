@@ -43,7 +43,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #info-bar {
   width: 100%;
   height: $square-size;

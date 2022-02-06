@@ -28,7 +28,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #end-screen {
   background-color: #2eae52;
   width: 100%;
