@@ -16,8 +16,8 @@
       <GridSquare
         v-for="col in gridSize"
         :key="col.id"
-        :row="row"
-        :col="col"
+        :row="row - 1"
+        :col="col - 1"
         :grid-size="gridSize"
         :cell-owner="grid[row - 1][col - 1]"
         @click="handleMove($event.target.id)"
@@ -94,7 +94,6 @@ export default {
       } else {
         this.nameOfPlayerTwo = 'Player Two';
       }
-      console.log(`Against Computer:${this.isAgainstComputer}`);
       if (this.turn === 'light' && this.isAgainstComputer && this.isComputerTurn) {
         this.isComputerTurn = false;
         this.computerMove();
@@ -106,7 +105,7 @@ export default {
     handleMove(moveLoc) {
       if (this.isValid(moveLoc, this.grid)) {
         // Make the move
-        this.makeMove(moveLoc, this.currentPlayer, this.grid);
+        this.grid = this.makeMove(moveLoc, this.currentPlayer, this.grid);
         this.changeTurn();
         this.updateScores(this.grid);
         // If there won't be a possible move pass the turn
@@ -127,24 +126,25 @@ export default {
           && this.isComputerTurn
           && this.checkAllPossibleMoves(this.grid).length !== 0
         ) {
-          console.log(this.checkAllPossibleMoves(this.grid));
           this.computerMove();
         }
       }
     },
     // Methods for making moves
     makeMove(moveLocation, movePlayer, moveGrid) {
-      const posRow = moveLocation[0] - 1;
-      const posCol = moveLocation[2] - 1;
-      const allChangingMoves = this.checkPossibleMoves(posRow, posCol, moveGrid);
+      let gridToUse = JSON.parse(JSON.stringify(moveGrid));
+      const posRow = parseInt(moveLocation[0], 10);
+      const posCol = parseInt(moveLocation[2], 10);
+      const allChangingMoves = this.checkPossibleMoves(posRow, posCol, gridToUse);
       allChangingMoves.forEach((el) => {
-        this.grid = this.changeColorTo(el[0], el[1], movePlayer.colorCode, this.grid);
+        gridToUse = this.changeColorTo(el[0], el[1], movePlayer.colorCode, gridToUse);
       });
+      return gridToUse;
     },
     computerMove() {
       const pickedMove = this.pickBestMove();
       setTimeout(
-        () => this.handleMove(`${pickedMove[0][0] + 1}-${pickedMove[0][1] + 1}`),
+        () => this.handleMove(`${pickedMove[0][0]}-${pickedMove[0][1]}`),
         this.moveDelay,
       );
     },
@@ -161,10 +161,7 @@ export default {
       possibleMoves.forEach((move) => {
         // Deep copy of current grid
         let curGrid = JSON.parse(JSON.stringify(this.grid));
-        const allMovesFrom = this.checkPossibleMoves(move[0][0], move[0][1], this.grid);
-        allMovesFrom.forEach((el) => {
-          curGrid = this.changeColorTo(el[0], el[1], this.lightColorCode, curGrid);
-        });
+        curGrid = this.makeMove([move[0][0], 0, move[0][1]], this.playerTwo, curGrid);
         const moveScore = this.calculateScores(curGrid)[0];
         if (moveScore > biggestMoveScore) {
           biggestMoveScore = moveScore;
@@ -233,8 +230,8 @@ export default {
     },
     // Calculating moves
     isValid(moveLocation, gridStatus) {
-      const moveRow = moveLocation[0] - 1;
-      const moveCol = moveLocation[2] - 1;
+      const moveRow = parseInt(moveLocation[0], 10);
+      const moveCol = parseInt(moveLocation[2], 10);
       const allPossibleMoves = [];
       // Is square filled ?
       if (gridStatus[moveRow][moveCol] !== 0) {
@@ -320,7 +317,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: white;
-  max-width: fit-content;
+  max-width: min-content;
   border: 2px solid black;
 }
 

@@ -64,7 +64,7 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: clamp(calc($square-size * 4), calc($square-size * 8), calc($square-size * 8));
+  width: clamp(calc($square-size * 4), calc($square-size * 8), 100vw);
   height: calc($square-size * 8 + $square-size);
 }
 </style>

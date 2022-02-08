@@ -32,7 +32,7 @@ export default {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  width: clamp(calc(4px * 72), calc(8px * 72), calc(8px * 72));
+  width: clamp(calc(4px * 72), calc(8px * 72), 100vw);
   height: calc(8px * 72 + 72px);
 }
 

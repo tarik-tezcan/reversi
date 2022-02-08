@@ -76,4 +76,20 @@ export default {
   margin-top: 0px;
   margin-bottom: 0px;
 }
+
+@media (max-width: 576px) {
+  #ai-checkbox {
+    font-size: 10px;
+    margin-top: 2px;
+
+    #vs-ai {
+      width: 8px;
+      height: 8px;
+      margin-left: 4px;
+    }
+  }
+  .turn-info-text {
+    font-size: 16px;
+  }
+}
 </style>

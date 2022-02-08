@@ -45,6 +45,7 @@ export default {
 
 <style lang="scss" scoped>
 #info-bar {
+  max-width: 100%;
   width: 100%;
   height: $square-size;
   border: 2px solid black;
@@ -53,8 +54,13 @@ export default {
   color: black;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-auto-rows: minmax($square-size, auto);
+  /* grid-auto-rows: minmax($square-size, auto); */
   justify-items: center;
 }
 
+@media (max-width: 576px) {
+  #info-bar {
+    height: 56px;
+  }
+}
 </style>

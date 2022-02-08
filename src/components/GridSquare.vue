@@ -48,8 +48,8 @@ export default {
   padding: 0px;
   background-color: #87ad66;
   position: relative;
-  width: $square-size;
-  height: $square-size;
+  width: clamp(24px, 11vw, $square-size);
+  height: clamp(24px, 11vw, $square-size);
   .disk {
     width: calc(100% - 4px);
     height: calc(100% - 4px);
@@ -65,6 +65,16 @@ export default {
     font-size: 12px;
     top: 4px;
     left: 4px;
+  }
+}
+
+@media (max-width: 576px) {
+  .square {
+    .disk {
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 1px solid black;
+    }
   }
 }
 </style>

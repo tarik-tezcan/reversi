@@ -33,7 +33,7 @@ export default {
 
 <style lang="scss" scoped>
 .player-info {
-  height: 72px;
+  height: 100%;
   display: grid;
   grid-template-rows: 33% 33% 33%;
   grid-template-areas:
@@ -58,4 +58,12 @@ export default {
   grid-area: ps;
 }
 
+@media (max-width: 576px) {
+  .player-name {
+    font-size: 10px;
+  }
+  .player-score {
+    font-size: 16px;
+  }
+}
 </style>
