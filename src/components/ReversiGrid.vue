@@ -90,9 +90,9 @@ export default {
     changeOpponent(event) {
       this.isAgainstComputer = event;
       if (this.isAgainstComputer) {
-        this.nameOfPlayerTwo = 'PC';
+        this.playerTwo.name = 'PC';
       } else {
-        this.nameOfPlayerTwo = 'Player Two';
+        this.playerTwo.name = 'Player Two';
       }
       if (this.turn === 'light' && this.isAgainstComputer && this.isComputerTurn) {
         this.isComputerTurn = false;
